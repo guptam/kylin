@@ -24,9 +24,6 @@ import java.nio.ByteBuffer;
  */
 public class DoubleSerializer extends DataTypeSerializer<DoubleMutable> {
 
-    // be thread-safe and avoid repeated obj creation
-    private ThreadLocal<DoubleMutable> current = new ThreadLocal<DoubleMutable>();
-
     public DoubleSerializer(DataType type) {
     }
 
@@ -36,7 +33,7 @@ public class DoubleSerializer extends DataTypeSerializer<DoubleMutable> {
     }
 
     private DoubleMutable current() {
-        DoubleMutable d = current.get();
+        DoubleMutable d = (DoubleMutable) current.get();
         if (d == null) {
             d = new DoubleMutable();
             current.set(d);

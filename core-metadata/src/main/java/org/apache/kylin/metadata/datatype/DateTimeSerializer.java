@@ -18,14 +18,11 @@
 
 package org.apache.kylin.metadata.datatype;
 
-import java.nio.ByteBuffer;
-
 import org.apache.kylin.common.util.DateFormat;
 
-public class DateTimeSerializer extends DataTypeSerializer<LongMutable> {
+import java.nio.ByteBuffer;
 
-    // be thread-safe and avoid repeated obj creation
-    private ThreadLocal<LongMutable> current = new ThreadLocal<LongMutable>();
+public class DateTimeSerializer extends DataTypeSerializer<LongMutable> {
 
     public DateTimeSerializer(DataType type) {
     }
@@ -36,7 +33,7 @@ public class DateTimeSerializer extends DataTypeSerializer<LongMutable> {
     }
 
     private LongMutable current() {
-        LongMutable l = current.get();
+        LongMutable l = (LongMutable) current.get();
         if (l == null) {
             l = new LongMutable();
             current.set(l);

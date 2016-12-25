@@ -18,17 +18,17 @@
 
 package org.apache.kylin.metadata.model;
 
-import java.util.List;
-
-import org.apache.kylin.common.util.StringUtil;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.kylin.common.util.StringUtil;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class ModelDimensionDesc {
+public class ModelDimensionDesc implements Serializable {
     @JsonProperty("table")
     private String table;
     @JsonProperty("columns")

@@ -30,7 +30,8 @@ public class DoubleSumAggregator extends MeasureAggregator<DoubleMutable> {
 
     @Override
     public void reset() {
-        sum.set(0.0);
+//        sum.set(0.0);
+        sum = new DoubleMutable();
     }
 
     @Override

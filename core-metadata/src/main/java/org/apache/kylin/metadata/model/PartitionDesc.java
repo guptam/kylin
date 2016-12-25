@@ -27,10 +27,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
+
 /**
  */
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class PartitionDesc {
+public class PartitionDesc implements Serializable {
 
     public static enum PartitionType {
         APPEND, //
@@ -175,7 +177,7 @@ public class PartitionDesc {
         String buildDateRangeCondition(PartitionDesc partDesc, long startInclusive, long endExclusive);
     }
 
-    public static class DefaultPartitionConditionBuilder implements IPartitionConditionBuilder {
+    public static class DefaultPartitionConditionBuilder implements IPartitionConditionBuilder, java.io.Serializable {
 
         @Override
         public String buildDateRangeCondition(PartitionDesc partDesc, long startInclusive, long endExclusive) {
