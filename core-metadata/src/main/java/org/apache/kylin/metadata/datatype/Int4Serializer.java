@@ -24,30 +24,19 @@ import java.nio.ByteBuffer;
 
 /**
  */
-public class Int4Serializer extends DataTypeSerializer<IntMutable> {
+public class Int4Serializer extends DataTypeSerializer<Integer> {
 
     public Int4Serializer(DataType type) {
     }
 
     @Override
-    public void serialize(IntMutable value, ByteBuffer out) {
-        BytesUtil.writeUnsigned(value.get(), 4, out);
-    }
-
-    private IntMutable current() {
-        IntMutable l = (IntMutable) current.get();
-        if (l == null) {
-            l = new IntMutable();
-            current.set(l);
-        }
-        return l;
+    public void serialize(Integer value, ByteBuffer out) {
+        BytesUtil.writeUnsigned(value, 4, out);
     }
 
     @Override
-    public IntMutable deserialize(ByteBuffer in) {
-        IntMutable l = current();
-        l.set(BytesUtil.readUnsigned(in, 4));
-        return l;
+    public Integer deserialize(ByteBuffer in) {
+        return BytesUtil.readUnsigned(in, 4);
     }
 
     @Override
@@ -66,7 +55,7 @@ public class Int4Serializer extends DataTypeSerializer<IntMutable> {
     }
 
     @Override
-    public IntMutable valueOf(String str) {
-        return new IntMutable(Integer.parseInt(str));
+    public Integer valueOf(String str) {
+        return Integer.parseInt(str);
     }
 }

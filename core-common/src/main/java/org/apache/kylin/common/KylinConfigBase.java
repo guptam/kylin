@@ -714,7 +714,20 @@ abstract public class KylinConfigBase implements Serializable {
     // ============================================================================
 
     public String getSparkHome() {
-        return getRequired("kylin.engine.spark.spark-home");
+        String sparkHome = getOptional("kylin.engine.spark.spark-home", "spark");
+        File f = new File(sparkHome);
+        if (f.exists()) {
+            return f.getAbsolutePath();
+        } else {
+            String home = getKylinHome();
+            f = new File(home, sparkHome);
+            if (f.exists()) {
+                return f.getAbsolutePath();
+            }
+        }
+
+        throw new IllegalArgumentException("Spark home '" + sparkHome + "' does not exist, check 'kylin.engine.spark.spark-home' in kylin.properties");
+
     }
 
     public String getSparkHadoopConfDir() {
@@ -734,7 +747,7 @@ abstract public class KylinConfigBase implements Serializable {
             }
         }
 
-        throw new IllegalArgumentException("Spark conf file '" + conf + "' does not exist.");
+        throw new IllegalArgumentException("Spark conf properties file '" + conf + "' does not exist.");
     }
 
     public String getSparkAdditionalJars() {

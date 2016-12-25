@@ -19,14 +19,13 @@
 package org.apache.kylin.measure.basic;
 
 import org.apache.kylin.measure.MeasureAggregator;
-import org.apache.kylin.metadata.datatype.DoubleMutable;
 
 /**
  */
 @SuppressWarnings("serial")
-public class DoubleMinAggregator extends MeasureAggregator<DoubleMutable> {
+public class DoubleMinAggregator extends MeasureAggregator<Double> {
 
-    DoubleMutable min = null;
+    Double min = null;
 
     @Override
     public void reset() {
@@ -34,15 +33,15 @@ public class DoubleMinAggregator extends MeasureAggregator<DoubleMutable> {
     }
 
     @Override
-    public void aggregate(DoubleMutable value) {
+    public void aggregate(Double value) {
         if (min == null)
-            min = new DoubleMutable(value.get());
-        else if (min.get() > value.get())
-            min.set(value.get());
+            min = value;
+        else if (min > value)
+            min = value;
     }
 
     @Override
-    public DoubleMutable getState() {
+    public Double getState() {
         return min;
     }
 

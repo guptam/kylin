@@ -22,30 +22,19 @@ import java.nio.ByteBuffer;
 
 /**
  */
-public class DoubleSerializer extends DataTypeSerializer<DoubleMutable> {
+public class DoubleSerializer extends DataTypeSerializer<Double> {
 
     public DoubleSerializer(DataType type) {
     }
 
     @Override
-    public void serialize(DoubleMutable value, ByteBuffer out) {
-        out.putDouble(value.get());
-    }
-
-    private DoubleMutable current() {
-        DoubleMutable d = (DoubleMutable) current.get();
-        if (d == null) {
-            d = new DoubleMutable();
-            current.set(d);
-        }
-        return d;
+    public void serialize(Double value, ByteBuffer out) {
+        out.putDouble(value);
     }
 
     @Override
-    public DoubleMutable deserialize(ByteBuffer in) {
-        DoubleMutable d = current();
-        d.set(in.getDouble());
-        return d;
+    public Double deserialize(ByteBuffer in) {
+        return in.getDouble();
     }
 
     @Override
@@ -64,7 +53,7 @@ public class DoubleSerializer extends DataTypeSerializer<DoubleMutable> {
     }
 
     @Override
-    public DoubleMutable valueOf(String str) {
-        return new DoubleMutable(Double.parseDouble(str));
+    public Double valueOf(String str) {
+        return Double.parseDouble(str);
     }
 }

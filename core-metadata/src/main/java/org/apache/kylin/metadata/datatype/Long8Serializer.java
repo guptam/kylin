@@ -24,30 +24,20 @@ import java.nio.ByteBuffer;
 
 /**
  */
-public class Long8Serializer extends DataTypeSerializer<LongMutable> {
+public class Long8Serializer extends DataTypeSerializer<Long> {
 
     public Long8Serializer(DataType type) {
     }
 
     @Override
-    public void serialize(LongMutable value, ByteBuffer out) {
-        BytesUtil.writeLong(value.get(), out);
+    public void serialize(Long value, ByteBuffer out) {
+        BytesUtil.writeLong(value, out);
     }
 
-    private LongMutable current() {
-        LongMutable l = (LongMutable) current.get();
-        if (l == null) {
-            l = new LongMutable();
-            current.set(l);
-        }
-        return l;
-    }
 
     @Override
-    public LongMutable deserialize(ByteBuffer in) {
-        LongMutable l = current();
-        l.set(BytesUtil.readLong(in));
-        return l;
+    public Long deserialize(ByteBuffer in) {
+        return BytesUtil.readLong(in);
     }
 
     @Override
@@ -66,7 +56,7 @@ public class Long8Serializer extends DataTypeSerializer<LongMutable> {
     }
 
     @Override
-    public LongMutable valueOf(String str) {
-        return new LongMutable(Long.parseLong(str));
+    public Long valueOf(String str) {
+        return Long.parseLong(str);
     }
 }

@@ -19,14 +19,13 @@
 package org.apache.kylin.measure.basic;
 
 import org.apache.kylin.measure.MeasureAggregator;
-import org.apache.kylin.metadata.datatype.LongMutable;
 
 /**
  */
 @SuppressWarnings("serial")
-public class LongMinAggregator extends MeasureAggregator<LongMutable> {
+public class LongMinAggregator extends MeasureAggregator<Long> {
 
-    LongMutable min = null;
+    Long min = null;
 
     @Override
     public void reset() {
@@ -34,15 +33,15 @@ public class LongMinAggregator extends MeasureAggregator<LongMutable> {
     }
 
     @Override
-    public void aggregate(LongMutable value) {
+    public void aggregate(Long value) {
         if (min == null)
-            min = new LongMutable(value.get());
-        else if (min.get() > value.get())
-            min.set(value.get());
+            min = value;
+        else if (min > value)
+            min = value;
     }
 
     @Override
-    public LongMutable getState() {
+    public Long getState() {
         return min;
     }
 

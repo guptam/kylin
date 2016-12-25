@@ -22,30 +22,19 @@ import org.apache.kylin.common.util.DateFormat;
 
 import java.nio.ByteBuffer;
 
-public class DateTimeSerializer extends DataTypeSerializer<LongMutable> {
+public class DateTimeSerializer extends DataTypeSerializer<Long> {
 
     public DateTimeSerializer(DataType type) {
     }
 
     @Override
-    public void serialize(LongMutable value, ByteBuffer out) {
-        out.putLong(value.get());
-    }
-
-    private LongMutable current() {
-        LongMutable l = (LongMutable) current.get();
-        if (l == null) {
-            l = new LongMutable();
-            current.set(l);
-        }
-        return l;
+    public void serialize(Long value, ByteBuffer out) {
+        out.putLong(value);
     }
 
     @Override
-    public LongMutable deserialize(ByteBuffer in) {
-        LongMutable l = current();
-        l.set(in.getLong());
-        return l;
+    public Long deserialize(ByteBuffer in) {
+        return in.getLong();
     }
 
     @Override
@@ -64,8 +53,8 @@ public class DateTimeSerializer extends DataTypeSerializer<LongMutable> {
     }
 
     @Override
-    public LongMutable valueOf(String str) {
-        return new LongMutable(DateFormat.stringToMillis(str));
+    public Long valueOf(String str) {
+        return Long.valueOf(DateFormat.stringToMillis(str));
     }
 
 }

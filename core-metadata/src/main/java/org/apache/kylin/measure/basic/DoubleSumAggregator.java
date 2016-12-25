@@ -19,28 +19,30 @@
 package org.apache.kylin.measure.basic;
 
 import org.apache.kylin.measure.MeasureAggregator;
-import org.apache.kylin.metadata.datatype.DoubleMutable;
 
 /**
  */
 @SuppressWarnings("serial")
-public class DoubleSumAggregator extends MeasureAggregator<DoubleMutable> {
+public class DoubleSumAggregator extends MeasureAggregator<Double> {
 
-    DoubleMutable sum = new DoubleMutable();
+    Double sum = null;
 
     @Override
     public void reset() {
-//        sum.set(0.0);
-        sum = new DoubleMutable();
+        sum = null;
     }
 
     @Override
-    public void aggregate(DoubleMutable value) {
-        sum.set(sum.get() + value.get());
+    public void aggregate(Double value) {
+        if (sum == null) {
+            sum = value;
+        } else {
+            sum = sum + value;
+        }
     }
 
     @Override
-    public DoubleMutable getState() {
+    public Double getState() {
         return sum;
     }
 

@@ -71,8 +71,6 @@ import scala.Tuple2;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -309,30 +307,23 @@ public class SparkCubingByLayer extends AbstractApplication implements Serializa
         BufferedMeasureCodec codec;
         CubeDesc cubeDesc;
         int measureNum;
-        transient ThreadLocal<MeasureAggregators> current = new ThreadLocal<>();
+        MeasureAggregators aggregators;
 
         CuboidReducerFunction2(int measureNum, CubeDesc cubeDesc, BufferedMeasureCodec codec) {
             this.codec = codec;
             this.cubeDesc = cubeDesc;
             this.measureNum = measureNum;
+            this.aggregators = new MeasureAggregators(cubeDesc.getMeasures());
         }
 
         @Override
         public Object[] call(Object[] input1, Object[] input2) throws Exception {
-            if (current.get() == null) {
-                current.set(new MeasureAggregators(cubeDesc.getMeasures()));
-            }
             Object[] result = new Object[measureNum];
-            current.get().reset();
-            current.get().aggregate(input1);
-            current.get().aggregate(input2);
-            current.get().collectStates(result);
+            aggregators.reset();
+            aggregators.aggregate(input1);
+            aggregators.aggregate(input2);
+            aggregators.collectStates(result);
             return result;
-        }
-
-        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-            in.defaultReadObject();
-            current = new ThreadLocal();
         }
     }
 
@@ -346,14 +337,11 @@ public class SparkCubingByLayer extends AbstractApplication implements Serializa
 
         @Override
         public Object[] call(Object[] input1, Object[] input2) throws Exception {
-            if (current.get() == null) {
-                current.set(new MeasureAggregators(cubeDesc.getMeasures()));
-            }
-            current.get().reset();
             Object[] result = new Object[measureNum];
-            current.get().aggregate(input1, needAggr);
-            current.get().aggregate(input2, needAggr);
-            current.get().collectStates(result);
+            aggregators.reset();
+            aggregators.aggregate(input1, needAggr);
+            aggregators.aggregate(input2, needAggr);
+            aggregators.collectStates(result);
             return result;
         }
     }
