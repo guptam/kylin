@@ -108,7 +108,7 @@ public class HLLCMeasureType extends MeasureType<HLLCounter> {
 
             @Override
             public void reset() {
-                current = new HyperLogLogPlusCounter(dataType.getPrecision());
+                current = new HLLCounter(dataType.getPrecision());
             }
         };
     }
