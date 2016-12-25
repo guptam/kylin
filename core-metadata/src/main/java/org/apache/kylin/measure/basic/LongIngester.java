@@ -43,4 +43,9 @@ public class LongIngester extends MeasureIngester<LongMutable> {
             l.set(Long.parseLong(values[0]));
         return l;
     }
+
+    @Override
+    public void reset() {
+        current = new LongMutable();
+    }
 }

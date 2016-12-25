@@ -43,4 +43,9 @@ public class DoubleIngester extends MeasureIngester<DoubleMutable> {
             l.set(Double.parseDouble(values[0]));
         return l;
     }
+
+    @Override
+    public void reset() {
+        current = new DoubleMutable();
+    }
 }

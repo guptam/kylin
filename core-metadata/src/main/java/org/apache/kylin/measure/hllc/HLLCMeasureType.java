@@ -105,6 +105,11 @@ public class HLLCMeasureType extends MeasureType<HyperLogLogPlusCounter> {
                 }
                 return hllc;
             }
+
+            @Override
+            public void reset() {
+                current = new HyperLogLogPlusCounter(dataType.getPrecision());
+            }
         };
     }
 

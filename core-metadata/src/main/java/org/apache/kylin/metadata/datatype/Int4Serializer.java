@@ -18,16 +18,13 @@
 
 package org.apache.kylin.metadata.datatype;
 
-import java.nio.ByteBuffer;
-
 import org.apache.kylin.common.util.BytesUtil;
+
+import java.nio.ByteBuffer;
 
 /**
  */
 public class Int4Serializer extends DataTypeSerializer<IntMutable> {
-
-    // be thread-safe and avoid repeated obj creation
-    private ThreadLocal<IntMutable> current = new ThreadLocal<IntMutable>();
 
     public Int4Serializer(DataType type) {
     }
@@ -38,7 +35,7 @@ public class Int4Serializer extends DataTypeSerializer<IntMutable> {
     }
 
     private IntMutable current() {
-        IntMutable l = current.get();
+        IntMutable l = (IntMutable) current.get();
         if (l == null) {
             l = new IntMutable();
             current.set(l);

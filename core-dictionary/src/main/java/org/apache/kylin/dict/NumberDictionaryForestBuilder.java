@@ -26,7 +26,7 @@ import org.apache.kylin.dict.NumberDictionary.NumberBytesCodec;
  */
 public class NumberDictionaryForestBuilder extends TrieDictionaryForestBuilder<String> {
 
-    public static class Number2BytesConverter implements BytesConverter<String> {
+    public static class Number2BytesConverter implements BytesConverter<String>, java.io.Serializable {
 
         static final int MAX_DIGITS_BEFORE_DECIMAL_POINT = NumberDictionary.MAX_DIGITS_BEFORE_DECIMAL_POINT;
         static final ThreadLocal<NumberBytesCodec> LOCAL = new ThreadLocal<NumberBytesCodec>();

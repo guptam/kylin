@@ -18,6 +18,9 @@
 
 package org.apache.kylin.measure.bitmap;
 
+import org.apache.commons.io.IOUtils;
+import org.roaringbitmap.buffer.MutableRoaringBitmap;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,13 +29,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
-import org.apache.commons.io.IOUtils;
-import org.roaringbitmap.buffer.MutableRoaringBitmap;
-
 /**
  * Created by sunyerui on 15/12/1.
  */
-public class BitmapCounter implements Comparable<BitmapCounter> {
+public class BitmapCounter implements Comparable<BitmapCounter>, java.io.Serializable {
 
     private MutableRoaringBitmap bitmap = new MutableRoaringBitmap();
 

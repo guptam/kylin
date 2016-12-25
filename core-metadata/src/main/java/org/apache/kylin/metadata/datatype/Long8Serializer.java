@@ -18,16 +18,13 @@
 
 package org.apache.kylin.metadata.datatype;
 
-import java.nio.ByteBuffer;
-
 import org.apache.kylin.common.util.BytesUtil;
+
+import java.nio.ByteBuffer;
 
 /**
  */
 public class Long8Serializer extends DataTypeSerializer<LongMutable> {
-
-    // be thread-safe and avoid repeated obj creation
-    private ThreadLocal<LongMutable> current = new ThreadLocal<LongMutable>();
 
     public Long8Serializer(DataType type) {
     }
@@ -38,7 +35,7 @@ public class Long8Serializer extends DataTypeSerializer<LongMutable> {
     }
 
     private LongMutable current() {
-        LongMutable l = current.get();
+        LongMutable l = (LongMutable) current.get();
         if (l == null) {
             l = new LongMutable();
             current.set(l);

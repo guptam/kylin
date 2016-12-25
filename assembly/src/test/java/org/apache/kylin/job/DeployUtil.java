@@ -81,7 +81,6 @@ public class DeployUtil {
 
         config().overrideMRJobJarPath(jobJar.getAbsolutePath());
         config().overrideCoprocessorLocalJar(coprocessorJar.getAbsolutePath());
-        config().overrideSparkJobJarPath(getSparkJobJarFile().getAbsolutePath());
     }
 
     private static String getPomVersion() {
