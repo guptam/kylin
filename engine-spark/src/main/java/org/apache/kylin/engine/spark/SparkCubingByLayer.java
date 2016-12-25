@@ -63,6 +63,7 @@ import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.hive.HiveContext;
+import org.apache.spark.storage.StorageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
@@ -81,7 +82,7 @@ import static org.apache.kylin.engine.spark.SparkCubing.getKyroClasses;
 
 /**
  */
-public class SparkCubingV3 extends AbstractApplication implements Serializable {
+public class SparkCubingByLayer extends AbstractApplication implements Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger(SparkCubing.class);
 
@@ -93,7 +94,7 @@ public class SparkCubingV3 extends AbstractApplication implements Serializable {
 
     private Options options;
 
-    public SparkCubingV3() {
+    public SparkCubingByLayer() {
         options = new Options();
         options.addOption(OPTION_INPUT_PATH);
         options.addOption(OPTION_CUBE_NAME);
@@ -130,7 +131,7 @@ public class SparkCubingV3 extends AbstractApplication implements Serializable {
     private static final void prepare() {
         final File file = new File(SparkFiles.get("kylin.properties"));
         final String confPath = file.getParentFile().getAbsolutePath();
-        System.out.println("conf directory:" + confPath);
+        logger.info("conf directory:" + confPath);
         System.setProperty(KylinConfig.KYLIN_CONF, confPath);
         ClassUtil.addClasspath(confPath);
     }
@@ -193,6 +194,8 @@ public class SparkCubingV3 extends AbstractApplication implements Serializable {
         }
         logger.info("All measure are normal (agg on all cuboids) ? : " + allNormalMeasure);
 
+        StorageLevel storageLevel = StorageLevel.MEMORY_AND_DISK_SER();
+
         // encode with dimension encoding, transform to <byte[], Object[]> RDD
         final JavaPairRDD<byte[], Object[]> encodedBaseRDD = intermediateTable.javaRDD().mapToPair(new PairFunction<Row, byte[], Object[]>() {
             @Override
@@ -227,15 +230,15 @@ public class SparkCubingV3 extends AbstractApplication implements Serializable {
         }
 
         // aggregate to calculate base cuboid
-        final JavaPairRDD<byte[], Object[]> baseCuboidRDD = encodedBaseRDD.reduceByKey(baseCuboidReducerFunction);
+        final JavaPairRDD<byte[], Object[]> baseCuboidRDD = encodedBaseRDD.reduceByKey(baseCuboidReducerFunction).persist(storageLevel);
         persistent(baseCuboidRDD, vCodec.getValue(), outputPath, 0, sc.hadoopConfiguration());
 
         // aggregate to ND cuboids
         final int totalLevels = cubeDesc.getBuildLevel();
 
-        JavaPairRDD<byte[], Object[]> parentRDD = baseCuboidRDD;
+        JavaPairRDD<byte[], Object[]> fatherRDD = baseCuboidRDD;
         for (int level = 1; level <= totalLevels; level++) {
-            JavaPairRDD<byte[], Object[]> childRDD = parentRDD.flatMapToPair(new PairFlatMapFunction<Tuple2<byte[], Object[]>, byte[], Object[]>() {
+            JavaPairRDD<byte[], Object[]> childRDD = fatherRDD.flatMapToPair(new PairFlatMapFunction<Tuple2<byte[], Object[]>, byte[], Object[]>() {
 
                 transient boolean initialized = false;
 
@@ -272,13 +275,15 @@ public class SparkCubingV3 extends AbstractApplication implements Serializable {
 
                     return tuples;
                 }
-            }).reduceByKey(reducerFunction2);
+            }).reduceByKey(reducerFunction2).persist(storageLevel);
 
             // persistent rdd to hdfs
             persistent(childRDD, vCodec.getValue(), outputPath, level, sc.hadoopConfiguration());
-            parentRDD = childRDD;
+            fatherRDD.unpersist();
+            fatherRDD = childRDD;
         }
 
+        fatherRDD.unpersist();
         logger.info("Finished on calculating all level cuboids.");
 
     }
@@ -297,6 +302,7 @@ public class SparkCubingV3 extends AbstractApplication implements Serializable {
         logger.debug("Persisting RDD for level " + level + " into " + cuboidOutputPath);
         serializedRDD.saveAsNewAPIHadoopFile(cuboidOutputPath, org.apache.hadoop.io.Text.class, org.apache.hadoop.io.Text.class, SequenceFileOutputFormat.class, conf);
         logger.debug("Done: persisting RDD for level " + level);
+        serializedRDD.unpersist();
     }
 
     class CuboidReducerFunction2 implements Function2<Object[], Object[], Object[]> {
