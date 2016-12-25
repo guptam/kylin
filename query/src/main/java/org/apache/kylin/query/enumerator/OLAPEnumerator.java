@@ -76,14 +76,15 @@ public class OLAPEnumerator implements Enumerator<Object[]> {
             }
             convertCurrentRow(tuple);
             return true;
-        } finally {
+        } catch (Exception e) {
             try {
                 if (cursor != null) {
                     cursor.close();
                 }
-            } catch (Exception e) {
-                logger.info("Error when closing cursor, ignore it", e);
+            } catch (Exception ee) {
+                logger.info("Error when closing cursor, ignore it", ee);
             }
+            throw e;
         }
     }
 
